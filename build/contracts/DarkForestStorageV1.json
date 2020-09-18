@@ -1,0 +1,2006 @@
+{
+  "fileName": "DarkForestStorageV1.sol",
+  "contractName": "DarkForestStorageV1",
+  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.6.9;\n\n// Import base Initializable contract\nimport \"./DarkForestTypes.sol\";\nimport \"./Whitelist.sol\";\n\ncontract DarkForestStorageV1 {\n    // Contract housekeeping\n    address public adminAddress;\n    Whitelist whitelist;\n    bool public paused;\n\n    // Game config\n    uint256 public VERSION;\n    bool public DISABLE_ZK_CHECK;\n    uint256 public constant PERLIN_THRESHOLD = 18;\n    uint256 public constant GLOBAL_SPEED_IN_HUNDRETHS = 75;\n    uint256 public constant PLANET_RARITY = 16384;\n    uint256 public constant ENERGY_PER_SECOND = 17;\n    uint256 public constant ENERGY_CAP = 200000;\n    uint256 public constant TRADING_POST_RARITY = 16;\n    uint256 public constant SILVER_RARITY = 4;\n    uint256 public constant TRADING_POST_BARBARIANS = 50;\n\n    // Default planet type stats\n    uint256[] public planetLevelThresholds;\n    uint256[] public planetTypeThresholds;\n    uint256[] public cumulativeRarities;\n    uint256[] public initializedPlanetCountByLevel;\n    DarkForestTypes.PlanetDefaultStats[] public planetDefaultStats;\n    DarkForestTypes.Upgrade[4][3] public upgrades;\n\n    // Game world state\n    uint256 gameEndTimestamp;\n    uint256 target4RadiusConstant;\n    uint256 target5RadiusConstant;\n    uint256[] public planetIds;\n    address[] public playerIds;\n    uint256 public worldRadius;\n    uint256 public planetEventsCount;\n    mapping(uint256 => DarkForestTypes.Planet) public planets;\n    mapping(uint256 => DarkForestTypes.PlanetExtendedInfo)\n        public planetsExtendedInfo;\n    mapping(address => bool) public isPlayerInitialized;\n\n    // maps location id to planet events array\n    mapping(uint256 => DarkForestTypes.PlanetEventMetadata[])\n        public planetEvents;\n\n    // maps event id to arrival data\n    mapping(uint256 => DarkForestTypes.ArrivalData) public planetArrivals;\n\n    // no-op for now since no player energy\n    // mapping(address => DarkForestTypes.PlayerInfo) public playerInfos;\n}\n",
+  "sourcePath": "contracts/core/DarkForestStorageV1.sol",
+  "sourceMap": "161:1825:10:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "161:1825:10:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;932:35;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;973:46;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;845:38;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1403:57;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;889:37;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1333:26;;;:::i;:::-;;;;;;;;;;;;;;;;;;;283:18;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;551:46;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1795:69;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;652:48;;;:::i;:::-;;;;;;;;;;;;;;;;;;;355:28;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;1561:51;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;1666:85;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1269:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1025:62;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;753:52;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1365:32;;;:::i;:::-;;;;;;;;;;;;;;;;;;;389:45;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1301:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;1093:45;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1466:89;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;440:54;;;:::i;:::-;;;;;;;;;;;;;;;;;;;500:45;;;:::i;:::-;;;;;;;;;;;;;;;;;;;706:41;;;:::i;:::-;;;;;;;;;;;;;;;;;;;225:27;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;603:43;;;:::i;:::-;;;;;;;;;;;;;;;;;;;327:22;;;:::i;:::-;;;;;;;;;;;;;;;;;;;932:35;;;;;;;;;;;;;;;;;;;;;;;;;:::o;973:46::-;;;;;;;;;;;;;;;;;;;;;;;;;:::o;845:38::-;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1403:57::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;889:37::-;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1333:26::-;;;;:::o;283:18::-;;;;;;;;;;;;;:::o;551:46::-;595:2;551:46;:::o;1795:69::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;652:48::-;698:2;652:48;:::o;355:28::-;;;;;;;;;;;;;:::o;1561:51::-;;;;;;;;;;;;;;;;;;;;;;:::o;1666:85::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1269:26::-;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1025:62::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;753:52::-;803:2;753:52;:::o;1365:32::-;;;;:::o;389:45::-;432:2;389:45;:::o;1301:26::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1093:45::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1466:89::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;440:54::-;492:2;440:54;:::o;500:45::-;540:5;500:45;:::o;706:41::-;746:1;706:41;:::o;225:27::-;;;;;;;;;;;;:::o;603:43::-;640:6;603:43;:::o;327:22::-;;;;:::o",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "DISABLE_ZK_CHECK",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ENERGY_CAP",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ENERGY_PER_SECOND",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "GLOBAL_SPEED_IN_HUNDRETHS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PERLIN_THRESHOLD",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PLANET_RARITY",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SILVER_RARITY",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TRADING_POST_BARBARIANS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TRADING_POST_RARITY",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "VERSION",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "adminAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "cumulativeRarities",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "initializedPlanetCountByLevel",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "isPlayerInitialized",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "planetArrivals",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "fromPlanet",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "toPlanet",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "popArriving",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverMoved",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "departureTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "arrivalTime",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "planetDefaultStats",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "label",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "populationCap",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "populationGrowth",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "range",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverGrowth",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverCap",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverMax",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "barbarianPercentage",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "energyCost",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "planetEvents",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum DarkForestTypes.PlanetEventType",
+          "name": "eventType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timeTrigger",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timeAdded",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "planetEventsCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "planetIds",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "planetLevelThresholds",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "planetTypeThresholds",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "planets",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "range",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "population",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "populationCap",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "populationGrowth",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum DarkForestTypes.PlanetResource",
+          "name": "planetResource",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverCap",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverGrowth",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silver",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverMax",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "planetLevel",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum DarkForestTypes.PlanetType",
+          "name": "planetType",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "planetsExtendedInfo",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isInitialized",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "version",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastUpdated",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "perlin",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "upgradeState0",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "upgradeState1",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "upgradeState2",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "playerIds",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "upgrades",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "popCapMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "popGroMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverCapMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverGroMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverMaxMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rangeMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "silverCostMultiplier",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "worldRadius",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "ast": {
+    "absolutePath": "contracts/core/DarkForestStorageV1.sol",
+    "exportedSymbols": {
+      "DarkForestStorageV1": [
+        14476
+      ]
+    },
+    "id": 14477,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 14381,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:23:10"
+      },
+      {
+        "absolutePath": "contracts/core/DarkForestTypes.sol",
+        "file": "./DarkForestTypes.sol",
+        "id": 14382,
+        "nodeType": "ImportDirective",
+        "scope": 14477,
+        "sourceUnit": 14588,
+        "src": "102:31:10",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "contracts/core/Whitelist.sol",
+        "file": "./Whitelist.sol",
+        "id": 14383,
+        "nodeType": "ImportDirective",
+        "scope": 14477,
+        "sourceUnit": 16363,
+        "src": "134:25:10",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 14476,
+        "linearizedBaseContracts": [
+          14476
+        ],
+        "name": "DarkForestStorageV1",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "fc6f9468",
+            "id": 14385,
+            "mutability": "mutable",
+            "name": "adminAddress",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "225:27:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 14384,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "225:7:10",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 14387,
+            "mutability": "mutable",
+            "name": "whitelist",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "258:19:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_Whitelist_$16362",
+              "typeString": "contract Whitelist"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 14386,
+              "name": "Whitelist",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 16362,
+              "src": "258:9:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Whitelist_$16362",
+                "typeString": "contract Whitelist"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "functionSelector": "5c975abb",
+            "id": 14389,
+            "mutability": "mutable",
+            "name": "paused",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "283:18:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 14388,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "283:4:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "ffa1ad74",
+            "id": 14391,
+            "mutability": "mutable",
+            "name": "VERSION",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "327:22:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14390,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "327:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "8af9d562",
+            "id": 14393,
+            "mutability": "mutable",
+            "name": "DISABLE_ZK_CHECK",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "355:28:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 14392,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "355:4:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "functionSelector": "bb5a86bd",
+            "id": 14396,
+            "mutability": "constant",
+            "name": "PERLIN_THRESHOLD",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "389:45:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14394,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "389:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "3138",
+              "id": 14395,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "432:2:10",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_18_by_1",
+                "typeString": "int_const 18"
+              },
+              "value": "18"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "functionSelector": "d9c1041f",
+            "id": 14399,
+            "mutability": "constant",
+            "name": "GLOBAL_SPEED_IN_HUNDRETHS",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "440:54:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14397,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "440:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "3735",
+              "id": 14398,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "492:2:10",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_75_by_1",
+                "typeString": "int_const 75"
+              },
+              "value": "75"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "functionSelector": "de2edb91",
+            "id": 14402,
+            "mutability": "constant",
+            "name": "PLANET_RARITY",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "500:45:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14400,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "500:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "3136333834",
+              "id": 14401,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "540:5:10",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_16384_by_1",
+                "typeString": "int_const 16384"
+              },
+              "value": "16384"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "functionSelector": "684ee29d",
+            "id": 14405,
+            "mutability": "constant",
+            "name": "ENERGY_PER_SECOND",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "551:46:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14403,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "551:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "3137",
+              "id": 14404,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "595:2:10",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_17_by_1",
+                "typeString": "int_const 17"
+              },
+              "value": "17"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "functionSelector": "fc96355d",
+            "id": 14408,
+            "mutability": "constant",
+            "name": "ENERGY_CAP",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "603:43:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14406,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "603:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "323030303030",
+              "id": 14407,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "640:6:10",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_200000_by_1",
+                "typeString": "int_const 200000"
+              },
+              "value": "200000"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "functionSelector": "7c58580f",
+            "id": 14411,
+            "mutability": "constant",
+            "name": "TRADING_POST_RARITY",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "652:48:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14409,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "652:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "3136",
+              "id": 14410,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "698:2:10",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_16_by_1",
+                "typeString": "int_const 16"
+              },
+              "value": "16"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "functionSelector": "fbb7fc6c",
+            "id": 14414,
+            "mutability": "constant",
+            "name": "SILVER_RARITY",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "706:41:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14412,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "706:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "34",
+              "id": 14413,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "746:1:10",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_4_by_1",
+                "typeString": "int_const 4"
+              },
+              "value": "4"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "functionSelector": "b8b0fa91",
+            "id": 14417,
+            "mutability": "constant",
+            "name": "TRADING_POST_BARBARIANS",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "753:52:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14415,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "753:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "3530",
+              "id": 14416,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "803:2:10",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_50_by_1",
+                "typeString": "int_const 50"
+              },
+              "value": "50"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "221f7764",
+            "id": 14420,
+            "mutability": "mutable",
+            "name": "planetLevelThresholds",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "845:38:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_uint256_$dyn_storage",
+              "typeString": "uint256[]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 14418,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "845:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "id": 14419,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "845:9:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                "typeString": "uint256[]"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "36b3d148",
+            "id": 14423,
+            "mutability": "mutable",
+            "name": "planetTypeThresholds",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "889:37:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_uint256_$dyn_storage",
+              "typeString": "uint256[]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 14421,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "889:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "id": 14422,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "889:9:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                "typeString": "uint256[]"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "10d4abf2",
+            "id": 14426,
+            "mutability": "mutable",
+            "name": "cumulativeRarities",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "932:35:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_uint256_$dyn_storage",
+              "typeString": "uint256[]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 14424,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "932:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "id": 14425,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "932:9:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                "typeString": "uint256[]"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "1f2836b7",
+            "id": 14429,
+            "mutability": "mutable",
+            "name": "initializedPlanetCountByLevel",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "973:46:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_uint256_$dyn_storage",
+              "typeString": "uint256[]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 14427,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "973:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "id": 14428,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "973:9:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                "typeString": "uint256[]"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "b5549e64",
+            "id": 14432,
+            "mutability": "mutable",
+            "name": "planetDefaultStats",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1025:62:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_struct$_PlanetDefaultStats_$14571_storage_$dyn_storage",
+              "typeString": "struct DarkForestTypes.PlanetDefaultStats[]"
+            },
+            "typeName": {
+              "baseType": {
+                "contractScope": null,
+                "id": 14430,
+                "name": "DarkForestTypes.PlanetDefaultStats",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 14571,
+                "src": "1025:34:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_PlanetDefaultStats_$14571_storage_ptr",
+                  "typeString": "struct DarkForestTypes.PlanetDefaultStats"
+                }
+              },
+              "id": 14431,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "1025:36:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_struct$_PlanetDefaultStats_$14571_storage_$dyn_storage_ptr",
+                "typeString": "struct DarkForestTypes.PlanetDefaultStats[]"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "c9359491",
+            "id": 14438,
+            "mutability": "mutable",
+            "name": "upgrades",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1093:45:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_array$_t_struct$_Upgrade_$14586_storage_$4_storage_$3_storage",
+              "typeString": "struct DarkForestTypes.Upgrade[4][3]"
+            },
+            "typeName": {
+              "baseType": {
+                "baseType": {
+                  "contractScope": null,
+                  "id": 14433,
+                  "name": "DarkForestTypes.Upgrade",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 14586,
+                  "src": "1093:23:10",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Upgrade_$14586_storage_ptr",
+                    "typeString": "struct DarkForestTypes.Upgrade"
+                  }
+                },
+                "id": 14435,
+                "length": {
+                  "argumentTypes": null,
+                  "hexValue": "34",
+                  "id": 14434,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "number",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "1117:1:10",
+                  "subdenomination": null,
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_rational_4_by_1",
+                    "typeString": "int_const 4"
+                  },
+                  "value": "4"
+                },
+                "nodeType": "ArrayTypeName",
+                "src": "1093:26:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_struct$_Upgrade_$14586_storage_$4_storage_ptr",
+                  "typeString": "struct DarkForestTypes.Upgrade[4]"
+                }
+              },
+              "id": 14437,
+              "length": {
+                "argumentTypes": null,
+                "hexValue": "33",
+                "id": 14436,
+                "isConstant": false,
+                "isLValue": false,
+                "isPure": true,
+                "kind": "number",
+                "lValueRequested": false,
+                "nodeType": "Literal",
+                "src": "1120:1:10",
+                "subdenomination": null,
+                "typeDescriptions": {
+                  "typeIdentifier": "t_rational_3_by_1",
+                  "typeString": "int_const 3"
+                },
+                "value": "3"
+              },
+              "nodeType": "ArrayTypeName",
+              "src": "1093:29:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_array$_t_struct$_Upgrade_$14586_storage_$4_storage_$3_storage_ptr",
+                "typeString": "struct DarkForestTypes.Upgrade[4][3]"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 14440,
+            "mutability": "mutable",
+            "name": "gameEndTimestamp",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1169:24:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14439,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1169:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 14442,
+            "mutability": "mutable",
+            "name": "target4RadiusConstant",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1199:29:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14441,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1199:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 14444,
+            "mutability": "mutable",
+            "name": "target5RadiusConstant",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1234:29:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14443,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1234:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "functionSelector": "ad489091",
+            "id": 14447,
+            "mutability": "mutable",
+            "name": "planetIds",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1269:26:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_uint256_$dyn_storage",
+              "typeString": "uint256[]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 14445,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "1269:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "id": 14446,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "1269:9:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                "typeString": "uint256[]"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "c012b112",
+            "id": 14450,
+            "mutability": "mutable",
+            "name": "playerIds",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1301:26:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_address_$dyn_storage",
+              "typeString": "address[]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 14448,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1301:7:10",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "id": 14449,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "1301:9:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                "typeString": "address[]"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "4eb0e959",
+            "id": 14452,
+            "mutability": "mutable",
+            "name": "worldRadius",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1333:26:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14451,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1333:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "bb4908f2",
+            "id": 14454,
+            "mutability": "mutable",
+            "name": "planetEventsCount",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1365:32:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 14453,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1365:7:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "26c1e750",
+            "id": 14458,
+            "mutability": "mutable",
+            "name": "planets",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1403:57:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Planet_$14511_storage_$",
+              "typeString": "mapping(uint256 => struct DarkForestTypes.Planet)"
+            },
+            "typeName": {
+              "id": 14457,
+              "keyType": {
+                "id": 14455,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "1411:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1403:42:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Planet_$14511_storage_$",
+                "typeString": "mapping(uint256 => struct DarkForestTypes.Planet)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 14456,
+                "name": "DarkForestTypes.Planet",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 14511,
+                "src": "1422:22:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Planet_$14511_storage_ptr",
+                  "typeString": "struct DarkForestTypes.Planet"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "ccf738e9",
+            "id": 14462,
+            "mutability": "mutable",
+            "name": "planetsExtendedInfo",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1466:89:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_PlanetExtendedInfo_$14526_storage_$",
+              "typeString": "mapping(uint256 => struct DarkForestTypes.PlanetExtendedInfo)"
+            },
+            "typeName": {
+              "id": 14461,
+              "keyType": {
+                "id": 14459,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "1474:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1466:54:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_PlanetExtendedInfo_$14526_storage_$",
+                "typeString": "mapping(uint256 => struct DarkForestTypes.PlanetExtendedInfo)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 14460,
+                "name": "DarkForestTypes.PlanetExtendedInfo",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 14526,
+                "src": "1485:34:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_PlanetExtendedInfo_$14526_storage_ptr",
+                  "typeString": "struct DarkForestTypes.PlanetExtendedInfo"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "9184f0b6",
+            "id": 14466,
+            "mutability": "mutable",
+            "name": "isPlayerInitialized",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1561:51:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
+              "typeString": "mapping(address => bool)"
+            },
+            "typeName": {
+              "id": 14465,
+              "keyType": {
+                "id": 14463,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1569:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1561:24:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
+                "typeString": "mapping(address => bool)"
+              },
+              "valueType": {
+                "id": 14464,
+                "name": "bool",
+                "nodeType": "ElementaryTypeName",
+                "src": "1580:4:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "ab230321",
+            "id": 14471,
+            "mutability": "mutable",
+            "name": "planetEvents",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1666:85:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_PlanetEventMetadata_$14535_storage_$dyn_storage_$",
+              "typeString": "mapping(uint256 => struct DarkForestTypes.PlanetEventMetadata[])"
+            },
+            "typeName": {
+              "id": 14470,
+              "keyType": {
+                "id": 14467,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "1674:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1666:57:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_array$_t_struct$_PlanetEventMetadata_$14535_storage_$dyn_storage_$",
+                "typeString": "mapping(uint256 => struct DarkForestTypes.PlanetEventMetadata[])"
+              },
+              "valueType": {
+                "baseType": {
+                  "contractScope": null,
+                  "id": 14468,
+                  "name": "DarkForestTypes.PlanetEventMetadata",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 14535,
+                  "src": "1685:35:10",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_PlanetEventMetadata_$14535_storage_ptr",
+                    "typeString": "struct DarkForestTypes.PlanetEventMetadata"
+                  }
+                },
+                "id": 14469,
+                "length": null,
+                "nodeType": "ArrayTypeName",
+                "src": "1685:37:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_struct$_PlanetEventMetadata_$14535_storage_$dyn_storage_ptr",
+                  "typeString": "struct DarkForestTypes.PlanetEventMetadata[]"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "76af38b4",
+            "id": 14475,
+            "mutability": "mutable",
+            "name": "planetArrivals",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 14476,
+            "src": "1795:69:10",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_ArrivalData_$14552_storage_$",
+              "typeString": "mapping(uint256 => struct DarkForestTypes.ArrivalData)"
+            },
+            "typeName": {
+              "id": 14474,
+              "keyType": {
+                "id": 14472,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "1803:7:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1795:47:10",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_ArrivalData_$14552_storage_$",
+                "typeString": "mapping(uint256 => struct DarkForestTypes.ArrivalData)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 14473,
+                "name": "DarkForestTypes.ArrivalData",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 14552,
+                "src": "1814:27:10",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_ArrivalData_$14552_storage_ptr",
+                  "typeString": "struct DarkForestTypes.ArrivalData"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 14477,
+        "src": "161:1825:10"
+      }
+    ],
+    "src": "39:1948:10"
+  },
+  "bytecode": "0x608060405234801561001057600080fd5b50610d89806100206000396000f3fe608060405234801561001057600080fd5b50600436106101a95760003560e01c8063ad489091116100f9578063ccf738e911610097578063fbb7fc6c11610071578063fbb7fc6c1461084d578063fc6f94681461086b578063fc96355d1461089f578063ffa1ad74146108bd576101a9565b8063ccf738e9146107a3578063d9c1041f14610811578063de2edb911461082f576101a9565b8063bb4908f2116100d3578063bb4908f214610699578063bb5a86bd146106b7578063c012b112146106d5578063c93594911461072d576101a9565b8063ad4890911461055a578063b5549e641461059c578063b8b0fa911461067b576101a9565b80635c975abb116101665780637c58580f116101405780637c58580f146104565780638af9d562146104745780639184f0b614610494578063ab230321146104ee576101a9565b80635c975abb1461038f578063684ee29d146103af57806376af38b4146103cd576101a9565b806310d4abf2146101ae5780631f2836b7146101f0578063221f77641461023257806326c1e7501461027457806336b3d1481461032f5780634eb0e95914610371575b600080fd5b6101da600480360360208110156101c457600080fd5b81019080803590602001909291905050506108db565b6040518082815260200191505060405180910390f35b61021c6004803603602081101561020657600080fd5b81019080803590602001909291905050506108fc565b6040518082815260200191505060405180910390f35b61025e6004803603602081101561024857600080fd5b810190808035906020019092919050505061091d565b6040518082815260200191505060405180910390f35b6102a06004803603602081101561028a57600080fd5b810190808035906020019092919050505061093e565b604051808d73ffffffffffffffffffffffffffffffffffffffff1681526020018c81526020018b81526020018a81526020018981526020018860018111156102e457fe5b815260200187815260200186815260200185815260200184815260200183815260200182600181111561031357fe5b81526020019c5050505050505050505050505060405180910390f35b61035b6004803603602081101561034557600080fd5b81019080803590602001909291905050506109d8565b6040518082815260200191505060405180910390f35b6103796109f9565b6040518082815260200191505060405180910390f35b6103976109ff565b60405180821515815260200191505060405180910390f35b6103b7610a12565b6040518082815260200191505060405180910390f35b6103f9600480360360208110156103e357600080fd5b8101908080359060200190929190505050610a17565b604051808981526020018873ffffffffffffffffffffffffffffffffffffffff1681526020018781526020018681526020018581526020018481526020018381526020018281526020019850505050505050505060405180910390f35b61045e610a7f565b6040518082815260200191505060405180910390f35b61047c610a84565b60405180821515815260200191505060405180910390f35b6104d6600480360360208110156104aa57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610a97565b60405180821515815260200191505060405180910390f35b6105246004803603604081101561050457600080fd5b810190808035906020019092919080359060200190929190505050610ab7565b6040518085815260200184600081111561053a57fe5b815260200183815260200182815260200194505050505060405180910390f35b6105866004803603602081101561057057600080fd5b8101908080359060200190929190505050610b0e565b6040518082815260200191505060405180910390f35b6105c8600480360360208110156105b257600080fd5b8101908080359060200190929190505050610b2f565b60405180806020018a815260200189815260200188815260200187815260200186815260200185815260200184815260200183815260200182810382528b818151815260200191508051906020019080838360005b8381101561063857808201518184015260208101905061061d565b50505050905090810190601f1680156106655780820380516001836020036101000a031916815260200191505b509a505050505050505050505060405180910390f35b610683610c22565b6040518082815260200191505060405180910390f35b6106a1610c27565b6040518082815260200191505060405180910390f35b6106bf610c2d565b6040518082815260200191505060405180910390f35b610701600480360360208110156106eb57600080fd5b8101908080359060200190929190505050610c32565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6107636004803603604081101561074357600080fd5b810190808035906020019092919080359060200190929190505050610c6e565b6040518088815260200187815260200186815260200185815260200184815260200183815260200182815260200197505050505050505060405180910390f35b6107cf600480360360208110156107b957600080fd5b8101908080359060200190929190505050610cc3565b60405180881515815260200187815260200186815260200185815260200184815260200183815260200182815260200197505050505050505060405180910390f35b610819610d12565b6040518082815260200191505060405180910390f35b610837610d17565b6040518082815260200191505060405180910390f35b610855610d1d565b6040518082815260200191505060405180910390f35b610873610d22565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6108a7610d46565b6040518082815260200191505060405180910390f35b6108c5610d4d565b6040518082815260200191505060405180910390f35b600681815481106108e857fe5b906000526020600020016000915090505481565b6007818154811061090957fe5b906000526020600020016000915090505481565b6004818154811061092a57fe5b906000526020600020016000915090505481565b60646020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154908060020154908060030154908060040154908060050160009054906101000a900460ff169080600601549080600701549080600801549080600901549080600a01549080600b0160009054906101000a900460ff1690508c565b600581815481106109e557fe5b906000526020600020016000915090505481565b60625481565b600160149054906101000a900460ff1681565b601181565b60686020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020154908060030154908060040154908060050154908060060154908060070154905088565b601081565b600360009054906101000a900460ff1681565b60666020528060005260406000206000915054906101000a900460ff1681565b60676020528160005260406000208181548110610ad057fe5b9060005260206000209060040201600091509150508060000154908060010160009054906101000a900460ff16908060020154908060030154905084565b60608181548110610b1b57fe5b906000526020600020016000915090505481565b60088181548110610b3c57fe5b9060005260206000209060090201600091509050806000018054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610be85780601f10610bbd57610100808354040283529160200191610be8565b820191906000526020600020905b815481529060010190602001808311610bcb57829003601f168201915b5050505050908060010154908060020154908060030154908060040154908060050154908060060154908060070154908060080154905089565b603281565b60635481565b601281565b60618181548110610c3f57fe5b906000526020600020016000915054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60098260038110610c7b57fe5b601c02018160048110610c8a57fe5b60070201600091509150508060000154908060010154908060020154908060030154908060040154908060050154908060060154905087565b60656020528060005260406000206000915090508060000160009054906101000a900460ff16908060010154908060020154908060030154908060040154908060050154908060060154905087565b604b81565b61400081565b600481565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b62030d4081565b6002548156fea2646970667358221220fb3a7318988738418d65a8891e52ad3eb7b79b5623294665da0f98c0a3b322a664736f6c634300060c0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101a95760003560e01c8063ad489091116100f9578063ccf738e911610097578063fbb7fc6c11610071578063fbb7fc6c1461084d578063fc6f94681461086b578063fc96355d1461089f578063ffa1ad74146108bd576101a9565b8063ccf738e9146107a3578063d9c1041f14610811578063de2edb911461082f576101a9565b8063bb4908f2116100d3578063bb4908f214610699578063bb5a86bd146106b7578063c012b112146106d5578063c93594911461072d576101a9565b8063ad4890911461055a578063b5549e641461059c578063b8b0fa911461067b576101a9565b80635c975abb116101665780637c58580f116101405780637c58580f146104565780638af9d562146104745780639184f0b614610494578063ab230321146104ee576101a9565b80635c975abb1461038f578063684ee29d146103af57806376af38b4146103cd576101a9565b806310d4abf2146101ae5780631f2836b7146101f0578063221f77641461023257806326c1e7501461027457806336b3d1481461032f5780634eb0e95914610371575b600080fd5b6101da600480360360208110156101c457600080fd5b81019080803590602001909291905050506108db565b6040518082815260200191505060405180910390f35b61021c6004803603602081101561020657600080fd5b81019080803590602001909291905050506108fc565b6040518082815260200191505060405180910390f35b61025e6004803603602081101561024857600080fd5b810190808035906020019092919050505061091d565b6040518082815260200191505060405180910390f35b6102a06004803603602081101561028a57600080fd5b810190808035906020019092919050505061093e565b604051808d73ffffffffffffffffffffffffffffffffffffffff1681526020018c81526020018b81526020018a81526020018981526020018860018111156102e457fe5b815260200187815260200186815260200185815260200184815260200183815260200182600181111561031357fe5b81526020019c5050505050505050505050505060405180910390f35b61035b6004803603602081101561034557600080fd5b81019080803590602001909291905050506109d8565b6040518082815260200191505060405180910390f35b6103796109f9565b6040518082815260200191505060405180910390f35b6103976109ff565b60405180821515815260200191505060405180910390f35b6103b7610a12565b6040518082815260200191505060405180910390f35b6103f9600480360360208110156103e357600080fd5b8101908080359060200190929190505050610a17565b604051808981526020018873ffffffffffffffffffffffffffffffffffffffff1681526020018781526020018681526020018581526020018481526020018381526020018281526020019850505050505050505060405180910390f35b61045e610a7f565b6040518082815260200191505060405180910390f35b61047c610a84565b60405180821515815260200191505060405180910390f35b6104d6600480360360208110156104aa57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610a97565b60405180821515815260200191505060405180910390f35b6105246004803603604081101561050457600080fd5b810190808035906020019092919080359060200190929190505050610ab7565b6040518085815260200184600081111561053a57fe5b815260200183815260200182815260200194505050505060405180910390f35b6105866004803603602081101561057057600080fd5b8101908080359060200190929190505050610b0e565b6040518082815260200191505060405180910390f35b6105c8600480360360208110156105b257600080fd5b8101908080359060200190929190505050610b2f565b60405180806020018a815260200189815260200188815260200187815260200186815260200185815260200184815260200183815260200182810382528b818151815260200191508051906020019080838360005b8381101561063857808201518184015260208101905061061d565b50505050905090810190601f1680156106655780820380516001836020036101000a031916815260200191505b509a505050505050505050505060405180910390f35b610683610c22565b6040518082815260200191505060405180910390f35b6106a1610c27565b6040518082815260200191505060405180910390f35b6106bf610c2d565b6040518082815260200191505060405180910390f35b610701600480360360208110156106eb57600080fd5b8101908080359060200190929190505050610c32565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6107636004803603604081101561074357600080fd5b810190808035906020019092919080359060200190929190505050610c6e565b6040518088815260200187815260200186815260200185815260200184815260200183815260200182815260200197505050505050505060405180910390f35b6107cf600480360360208110156107b957600080fd5b8101908080359060200190929190505050610cc3565b60405180881515815260200187815260200186815260200185815260200184815260200183815260200182815260200197505050505050505060405180910390f35b610819610d12565b6040518082815260200191505060405180910390f35b610837610d17565b6040518082815260200191505060405180910390f35b610855610d1d565b6040518082815260200191505060405180910390f35b610873610d22565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6108a7610d46565b6040518082815260200191505060405180910390f35b6108c5610d4d565b6040518082815260200191505060405180910390f35b600681815481106108e857fe5b906000526020600020016000915090505481565b6007818154811061090957fe5b906000526020600020016000915090505481565b6004818154811061092a57fe5b906000526020600020016000915090505481565b60646020528060005260406000206000915090508060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060010154908060020154908060030154908060040154908060050160009054906101000a900460ff169080600601549080600701549080600801549080600901549080600a01549080600b0160009054906101000a900460ff1690508c565b600581815481106109e557fe5b906000526020600020016000915090505481565b60625481565b600160149054906101000a900460ff1681565b601181565b60686020528060005260406000206000915090508060000154908060010160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16908060020154908060030154908060040154908060050154908060060154908060070154905088565b601081565b600360009054906101000a900460ff1681565b60666020528060005260406000206000915054906101000a900460ff1681565b60676020528160005260406000208181548110610ad057fe5b9060005260206000209060040201600091509150508060000154908060010160009054906101000a900460ff16908060020154908060030154905084565b60608181548110610b1b57fe5b906000526020600020016000915090505481565b60088181548110610b3c57fe5b9060005260206000209060090201600091509050806000018054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610be85780601f10610bbd57610100808354040283529160200191610be8565b820191906000526020600020905b815481529060010190602001808311610bcb57829003601f168201915b5050505050908060010154908060020154908060030154908060040154908060050154908060060154908060070154908060080154905089565b603281565b60635481565b601281565b60618181548110610c3f57fe5b906000526020600020016000915054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60098260038110610c7b57fe5b601c02018160048110610c8a57fe5b60070201600091509150508060000154908060010154908060020154908060030154908060040154908060050154908060060154905087565b60656020528060005260406000206000915090508060000160009054906101000a900460ff16908060010154908060020154908060030154908060040154908060050154908060060154905087565b604b81565b61400081565b600481565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b62030d4081565b6002548156fea2646970667358221220fb3a7318988738418d65a8891e52ad3eb7b79b5623294665da0f98c0a3b322a664736f6c634300060c0033",
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang",
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "evmVersion": "petersburg"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "contracts": {},
+  "solidityLibs": {},
+  "proxies": {
+    "darkforest-empire/Greeter": [
+      {
+        "address": "0x7c2C195CD6D34B8F845992d380aADB2730bB9C6F",
+        "kind": "NonProxy",
+        "bytecodeHash": "86a589a75426460db877cbb1004d102ef6544863ad6bbf5af8deac5ffc9e36d7"
+      }
+    ]
+  },
+  "manifestVersion": "2.2"
+}

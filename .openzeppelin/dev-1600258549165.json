@@ -1,0 +1,52 @@
+{
+  "contracts": {
+    "DarkForestEmpire": {
+      "address": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15",
+      "constructorCode": "608060405234801561001057600080fd5b5061039e806100206000396000f3fe",
+      "bodyBytecodeHash": "93b30c0d935b9f3deee643baf50ced5882597a45bcb5e3beb5a8911b6ca564e2",
+      "localBytecodeHash": "6f548897795820a36fe87407702f1ba0740288c2f972530370e8a9fee377a0eb",
+      "deployedBytecodeHash": "6f548897795820a36fe87407702f1ba0740288c2f972530370e8a9fee377a0eb",
+      "types": {
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        }
+      },
+      "storage": [
+        {
+          "contract": "DarkForestEmpire",
+          "path": "contracts/Greeter.sol",
+          "label": "gameContract",
+          "astId": 8208,
+          "type": "t_address",
+          "src": "607:27:2"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    }
+  },
+  "solidityLibs": {},
+  "proxies": {
+    "darkforest-empire/DarkForestEmpire": [
+      {
+        "address": "0x6eD79Aa1c71FD7BdBC515EfdA3Bd4e26394435cC",
+        "version": "1.0.0",
+        "implementation": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15",
+        "admin": "0xA94B7f0465E98609391C623d0560C5720a3f2D33",
+        "kind": "Upgradeable"
+      }
+    ]
+  },
+  "manifestVersion": "2.2",
+  "version": "1.0.0",
+  "proxyAdmin": {
+    "address": "0xA94B7f0465E98609391C623d0560C5720a3f2D33"
+  }
+}
